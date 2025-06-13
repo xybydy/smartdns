@@ -115,7 +115,7 @@ echo "-----------------------------"
 make defconfig
 
 make package/${package_name}/clean
-make package/${package_name}/compile V=s
+make package/${package_name}/compile V=s BUILD_ONLY=1
 
 cd "$dir"
 find "$sdk_home_dir/bin/" -type f -name "${package_name}*.ipk" -exec cp -f {} "$dir" \;
