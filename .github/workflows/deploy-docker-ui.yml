@@ -117,10 +117,10 @@ jobs:
           fi
           cd ${{ github.workspace }}
           cat >> Dockerfile.unknown << 'EOF'
-          FROM alpine:3.21
+          FROM alpine:3.22
           ENV TZ="Asia/Shanghai"
           COPY ./src/smartdns /usr/sbin
-          COPY ./openssl/libcrypto.so ./openssl/libssl.so ./plugin/smartdns-ui/libsmartdns_ui.so ./plugin/smartdns-ui/libgcc_s.so.1 /usr/lib
+          COPY ./plugin/smartdns-ui/libsmartdns_ui.so ./plugin/smartdns-ui/libgcc_s.so.1 /usr/lib
           COPY ./smartdns-webui/out /wwwroot
           RUN apk add --no-cache tzdata && (ldd /usr/sbin/smartdns 2>&1 | grep -q "libatomic.so" && apk add --no-cache libatomic || true)
           EXPOSE 53/udp 53/tcp 6080/tcp
