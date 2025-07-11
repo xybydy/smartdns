@@ -125,6 +125,7 @@ jobs:
           COPY ./openssl/libcrypto.so ./openssl/libssl.so ./plugin/smartdns-ui/libsmartdns_ui.so ./plugin/smartdns-ui/libgcc_s.so.1 /usr/lib
           COPY ./smartdns-webui/out /wwwroot
           RUN apk add --no-cache tzdata && (ldd /usr/sbin/smartdns 2>&1 | grep -q "libatomic.so" && apk add --no-cache libatomic || true)
+          RUN ln -sf /usr/lib/libssl.so /usr/lib/libssl.so.3 && ln -sf /usr/lib/libcrypto.so /usr/lib/libcrypto.so.3
           EXPOSE 53/udp 53/tcp 6080/tcp
           VOLUME "/etc/smartdns/"
           HEALTHCHECK --interval=5m CMD test $(nslookup dns.pub 127.0.0.1 |grep answer |wc -l) -gt 0
