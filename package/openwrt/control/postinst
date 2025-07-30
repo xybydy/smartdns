@@ -19,6 +19,10 @@ chmod +x /usr/sbin/smartdns
 chmod +x /etc/init.d/smartdns
 mkdir -p /var/etc/smartdns/
 
+if [ -f /usr/lib/libsmartdns_ui.so ]; then
+    ln -sf /usr/lib/libsmartdns_ui.so /usr/lib/smartdns_ui.so
+fi
+
 [ "${IPKG_NO_SCRIPT}" = "1" ] && exit 0
 . ${IPKG_INSTROOT}/lib/functions.sh
 default_postinst $0 $@
