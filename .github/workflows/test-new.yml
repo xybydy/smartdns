@@ -32,7 +32,7 @@ jobs:
   #         echo "CUR_VERSION=$pre_version$cur_version" >> $GITHUB_OUTPUT
 
   build:
-    needs: get-version
+    # needs: get-version
     strategy:
       matrix:
         goarch: [aarch64]
