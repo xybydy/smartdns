@@ -69,6 +69,7 @@ jobs:
           else
            ./Configure no-tests linux-$GOARCH enable-quic enable-ktls no-docs
           fi
+          echo `ls`
           make all
           cd /workdir
           export CFLAGS="-I /workdir/openssl/include"
@@ -103,70 +104,70 @@ jobs:
           path: |
             ${{ github.workspace }}/build/*
 
-      - name: Generate release tag
-        id: tag
-        run: |
-          echo "release_tag=${{needs.get-version.outputs.CUR_VERSION}}" >> $GITHUB_OUTPUT
-          touch release.txt
-          echo "同步更新上游代码" >> release.txt
-          echo ${{ github.sha }} >> Release.txt
-          echo "status=success" >> $GITHUB_OUTPUT
-      - name: Upload firmware to release
-        uses: softprops/action-gh-release@v1
-        if: steps.tag.outputs.status == 'success'
-        env:
-          GITHUB_TOKEN: ${{ secrets.WRT_TOKEN }}
-        with:
-          tag_name: ${{ steps.tag.outputs.release_tag }}
-          body_path: release.txt
-          files: |
+      # - name: Generate release tag
+      #   id: tag
+      #   run: |
+      #     echo "release_tag=${{needs.get-version.outputs.CUR_VERSION}}" >> $GITHUB_OUTPUT
+      #     touch release.txt
+      #     echo "同步更新上游代码" >> release.txt
+      #     echo ${{ github.sha }} >> Release.txt
+      #     echo "status=success" >> $GITHUB_OUTPUT
+      # - name: Upload firmware to release
+      #   uses: softprops/action-gh-release@v1
+      #   if: steps.tag.outputs.status == 'success'
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.WRT_TOKEN }}
+      #   with:
+      #     tag_name: ${{ steps.tag.outputs.release_tag }}
+      #     body_path: release.txt
+      #     files: |
             ${{ github.workspace }}/build/*
 
-  build-luci:
-    # needs: get-version
-    strategy:
-      matrix:
-        goarch: [luci, luci-compat, luci-lite]
-    runs-on: ubuntu-latest
-    env:
-      GOARCH: ${{ matrix.goarch }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build luci
-        continue-on-error: true
-        run: |
-          sudo apt install -y rename
-          sudo timedatectl set-timezone "Asia/Shanghai"
-          cd ${{ github.workspace }}
-          mkdir -p ${{ github.workspace }}/build
-          #修改版本号
-          sed -i "s/VER=.*/VER=${{needs.get-version.outputs.CUR_VERSION}}/" package/build-pkg.sh
-          #单独编译luci和luci-compat
-          ./package/build-pkg.sh --platform $GOARCH --arch all --filearch $GOARCH-all --outputdir ${{ github.workspace }}/build
+  # build-luci:
+  #   # needs: get-version
+  #   strategy:
+  #     matrix:
+  #       goarch: [luci, luci-compat, luci-lite]
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     GOARCH: ${{ matrix.goarch }}
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Build luci
+  #       continue-on-error: true
+  #       run: |
+  #         sudo apt install -y rename
+  #         sudo timedatectl set-timezone "Asia/Shanghai"
+  #         cd ${{ github.workspace }}
+  #         mkdir -p ${{ github.workspace }}/build
+  #         #修改版本号
+  #         sed -i "s/VER=.*/VER=${{needs.get-version.outputs.CUR_VERSION}}/" package/build-pkg.sh
+  #         #单独编译luci和luci-compat
+  #         ./package/build-pkg.sh --platform $GOARCH --arch all --filearch $GOARCH-all --outputdir ${{ github.workspace }}/build
 
 #      - name: Upload To Artifact
 #        uses: actions/upload-artifact@v2
 #        with:
 #          path: ${{ github.workspace }}/build/
 
-      - name: Generate release tag
-        id: tag
-        run: |
-          echo "release_tag=${{needs.get-version.outputs.CUR_VERSION}}" >> $GITHUB_OUTPUT
-          touch release.txt
-          echo "同步更新上游代码" >> release.txt
-          echo ${{ github.sha }} >> Release.txt
-          echo "status=success" >> $GITHUB_OUTPUT
-      - name: Upload firmware to release
-        uses: softprops/action-gh-release@v1
-        if: steps.tag.outputs.status == 'success'
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-        with:
-          tag_name: ${{ steps.tag.outputs.release_tag }}
-          body_path: release.txt
-          files: |
-            ${{ github.workspace }}/build/*
+      # - name: Generate release tag
+      #   id: tag
+      #   run: |
+      #     echo "release_tag=${{needs.get-version.outputs.CUR_VERSION}}" >> $GITHUB_OUTPUT
+      #     touch release.txt
+      #     echo "同步更新上游代码" >> release.txt
+      #     echo ${{ github.sha }} >> Release.txt
+      #     echo "status=success" >> $GITHUB_OUTPUT
+      # - name: Upload firmware to release
+      #   uses: softprops/action-gh-release@v1
+      #   if: steps.tag.outputs.status == 'success'
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      #   with:
+      #     tag_name: ${{ steps.tag.outputs.release_tag }}
+      #     body_path: release.txt
+      #     files: |
+      #       ${{ github.workspace }}/build/*
 
   # update-version:
   #   if: ((github.event_name=='workflow_dispatch' && github.event.inputs.update-version-number=='true') || github.event_name=='push')
