@@ -35,7 +35,7 @@ jobs:
     needs: get-version
     strategy:
       matrix:
-        goarch: [x86_64, powerpc64le, mipsel, mips, i686, aarch64, armv7l, mips-sf]
+        goarch: [aarch64]
       fail-fast: false
     runs-on: ubuntu-latest
     env:
@@ -96,6 +96,13 @@ jobs:
             sed -i 's|^export STRIP.*|export STRIP=/$GOARCH-linux-musl/bin/strip|' ./package/build-pkg.sh
             docker run -i --rm -v ${{ github.workspace }}:/workdir muslcc/x86_64:$GOARCH-linux-musl sh /workdir/docker-build.sh
           fi
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: "FFFF"
+          path: |
+            ${{ github.workspace }}/build/*
+
       - name: Generate release tag
         id: tag
         run: |
@@ -108,7 +115,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: steps.tag.outputs.status == 'success'
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.WRT_TOKEN }}
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
           body_path: release.txt
