@@ -18,11 +18,6 @@ jobs:
     outputs:
       CUR_VERSION: ${{steps.get-version.outputs.CUR_VERSION}}
     steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: VERSION_CONTROL
-        fetch-depth: 1
-        path: version_control
     - name: get version
       id: get-version
       run: |
