@@ -172,7 +172,7 @@ jobs:
           cp -a ${{ github.workspace }}/smartdns-webui/out/* ./usr/share/smartdns/wwwroot/
           sed -i "s/Version:.*/Version: ${{needs.get-version.outputs.CUR_VERSION}}/" ./DEBIAN/control
           sed -i "s/Architecture:.*/Architecture: all/" ./DEBIAN/control
-          sed -i '/^Depends:/ {s/$/, musl/;b}; /^Package:/a Depends: musl' ./DEBIAN/debian/control
+          sed -i '/^Depends:/ {s/$/, musl/;b}; /^Package:/a Depends: musl' ./DEBIAN/control
           chmod 0755 ./DEBIAN/prerm || true
           dpkg -b ${{ github.workspace }}/package/debian ${{ github.workspace }}/build/smartdns_with_ui.${{needs.get-version.outputs.CUR_VERSION}}.$GOARCH.deb
       - name: release ipk with edns
