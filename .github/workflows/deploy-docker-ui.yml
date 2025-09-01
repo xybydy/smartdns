@@ -150,6 +150,30 @@ jobs:
           cd ${{ github.workspace }}/package/openwrt
           chmod +x make_openwrt_withui.sh
           ./make_openwrt_withui.sh -o ${{ github.workspace }}/build --arch all --filearch $GOARCH --ver ${{needs.get-version.outputs.CUR_VERSION}}
+      - name: release deb
+        run: |
+          cd ${{ github.workspace }}/package/debian
+          rm make.sh || true
+          mkdir usr/sbin -p
+          cp ${{ github.workspace }}/src/smartdns usr/sbin/
+          chmod +x usr/sbin/smartdns || true
+          mkdir etc/smartdns -p
+          cp ${{ github.workspace }}/etc/smartdns/smartdns.conf ./etc/smartdns/
+          mkdir etc/default -p
+          cp ${{ github.workspace }}/etc/default/smartdns ./etc/default/
+          mkdir lib/systemd/system -p
+          cp ${{ github.workspace }}/systemd/smartdns.service ./lib/systemd/system/
+          mkdir usr/local/lib/smartdns -p
+          cp ${{ github.workspace }}/openssl/libcrypto.so ./usr/local/lib/smartdns/
+          cp ${{ github.workspace }}/openssl/libssl.so ./usr/local/lib/smartdns/
+          cp ${{ github.workspace }}/plugin/smartdns-ui/libsmartdns_ui.so ./usr/local/lib/smartdns/smartdns_ui.so
+          cp ${{ github.workspace }}/plugin/smartdns-ui/libgcc_s.so.1 ./usr/local/lib/smartdns/
+          mkdir usr/share/smartdns/wwwroot -p
+          cp -a ${{ github.workspace }}/smartdns-webui/out/* ./usr/share/smartdns/wwwroot/
+          sed -i "s/Version:.*/Version: ${{needs.get-version.outputs.CUR_VERSION}}/" ./DEBIAN/control
+          sed -i "s/Architecture:.*/Architecture: all/" ./DEBIAN/control
+          chmod 0755 ./DEBIAN/prerm || true
+          dpkg -b ${{ github.workspace }}/package/debian ${{ github.workspace }}/build/smartdns.${{needs.get-version.outputs.CUR_VERSION}}.$GOARCH.deb
       - name: release ipk with edns
         run: |
           cd ${{ github.workspace }}
@@ -169,6 +193,13 @@ jobs:
           cd ${{ github.workspace }}/package/openwrt
           chmod +x make_openwrt_withui.sh
           ./make_openwrt_withui.sh -o ${{ github.workspace }}/build --arch all --filearch $GOARCH-edns --ver ${{needs.get-version.outputs.CUR_VERSION}}
+      - name: release deb with edns
+        run: |
+          cd ${{ github.workspace }}/package/debian
+          rm usr/sbin/smartdns || true
+          cp ${{ github.workspace }}/src/smartdns usr/sbin/
+          chmod +x usr/sbin/smartdns || true
+          dpkg -b ${{ github.workspace }}/package/debian ${{ github.workspace }}/build/smartdns.${{needs.get-version.outputs.CUR_VERSION}}.$GOARCH-edns.deb
       - name: general tag and release ipk
         id: tag
         run: |
