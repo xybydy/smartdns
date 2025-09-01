@@ -167,6 +167,7 @@ jobs:
           mkdir usr/local/lib/smartdns -p
           cp ${{ github.workspace }}/openssl/libcrypto.so ./usr/local/lib/smartdns/libcrypto.so.3
           cp ${{ github.workspace }}/openssl/libssl.so ./usr/local/lib/smartdns/libssl.so.3
+          cp ${{ github.workspace }}/plugin/smartdns-ui/libgcc_s.so.1 ./usr/local/lib/smartdns/libgcc_s.so.1
           cp ${{ github.workspace }}/plugin/smartdns-ui/libsmartdns_ui.so ./usr/local/lib/smartdns/smartdns_ui.so
           mkdir usr/share/smartdns/wwwroot -p
           cp -a ${{ github.workspace }}/smartdns-webui/out/* ./usr/share/smartdns/wwwroot/
